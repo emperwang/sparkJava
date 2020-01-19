@@ -19,6 +19,7 @@
 	<modules>
 		<module>SparkJavaPrj</module>
         <module>SparkKafka</module>
+        <module>sparkScala</module>
     </modules>
 	
 </project>
