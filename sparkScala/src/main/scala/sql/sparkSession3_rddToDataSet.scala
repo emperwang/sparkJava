@@ -56,8 +56,9 @@ object sparkSession3_rddToDataSet {
       // ds 转换为 df
       val df: DataFrame = ds.toDF("name","age")
 
-      // df -> ds  ?
-
+      // df -> ds
+      // 设置上 约束类型
+      val unit: Dataset[User] = df.as[User]
     }
 }
 // 模板类,用于模式匹配
