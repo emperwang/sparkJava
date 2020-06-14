@@ -20,6 +20,7 @@
 		<module>SparkJavaPrj</module>
         <module>SparkKafka</module>
         <module>sparkScala</module>
+        <module>ScalaOperation</module>
     </modules>
 	
 </project>
