@@ -9,6 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object operat1_map {
   def main(args: Array[String]): Unit = {
+    System.setProperty("hadoop.home.dir", "D:\\hadoop_home")
     val conf = new SparkConf().setMaster("local[2]").setAppName("operat-map")
     val sc = new SparkContext(config = conf)
     /**
