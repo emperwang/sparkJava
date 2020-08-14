@@ -15,7 +15,7 @@ object ListMatch {
       println("host="+value)
       parse(tail)
 
-    case Nil =>  // No-op
+    case Nil =>  println("match nothing")// No-op
 
   }
 
