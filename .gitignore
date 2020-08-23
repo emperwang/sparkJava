@@ -11,7 +11,7 @@ Servers
 .classpath
 .project
 .settings     
- ##filter databfile¡¢sln file##
+ ##filter databfileï¿½ï¿½sln file##
 *.iml
 *.mdb  
 *.ldb  
@@ -44,3 +44,6 @@ Servers
 Icon?  
 ehthumbs.db  
 Thumbs.db
+
+## gradle
+.gradle

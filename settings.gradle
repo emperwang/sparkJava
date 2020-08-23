@@ -1,0 +1,10 @@
+rootProject.name = 'spark-java-parent'
+include ':SparkJavaPrj'
+include ':SparkKafka'
+include ':sparkScala'
+include ':ScalaOperation'
+
+project(':SparkJavaPrj').projectDir = "$rootDir/SparkJavaPrj" as File
+project(':SparkKafka').projectDir = "$rootDir/SparkKafka" as File
+project(':sparkScala').projectDir = "$rootDir/sparkScala" as File
+project(':ScalaOperation').projectDir = "$rootDir/ScalaOperation" as File

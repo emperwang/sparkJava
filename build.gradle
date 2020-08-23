@@ -1,0 +1,32 @@
+allprojects  {
+  apply plugin: 'maven'
+  group = 'com.demo.spark.java'
+  version = '1.0-SNAPSHOT'
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'scala'
+  apply plugin: 'application'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  tasks.withType(JavaCompile) {
+  	options.encoding = 'UTF-8'
+  }
+
+  
+  repositories {
+    mavenLocal()
+    maven {url "http://maven.aliyun.com/nexus/content/groups/public"}
+    maven { url "http://repo.maven.apache.org/maven2" }
+  }
+
+  dependencies {
+    compile "org.scala-lang:scala-library:2.11.12"
+    compile "org.scala-lang:scala-compiler:2.11.12"
+    compile "org.scala-lang:scala-reflect:2.11.12"
+  }
+  
+  
+  
+}
