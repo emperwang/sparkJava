@@ -37,7 +37,7 @@ public class WordCountCluster {
         JavaPairRDD<String, Integer> pairRDD = wordRDD.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String s) throws Exception {
-                return new Tuple2<>(s, 1);
+                return new Tuple2<String, Integer>(s, 1);
             }
         });
         //通过reduce操作,算出结果
