@@ -28,7 +28,7 @@ Servers
 *.dmg  
 *.gz  
 *.iso  
-*.jar  
+*.jar
 *.rar  
 *.tar  
 *.zip  
@@ -47,3 +47,4 @@ Thumbs.db
 
 ## gradle
 .gradle
+build
