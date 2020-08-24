@@ -8,3 +8,7 @@ project(':SparkJavaPrj').projectDir = "$rootDir/SparkJavaPrj" as File
 project(':SparkKafka').projectDir = "$rootDir/SparkKafka" as File
 project(':sparkScala').projectDir = "$rootDir/sparkScala" as File
 project(':ScalaOperation').projectDir = "$rootDir/ScalaOperation" as File
+include 'spark-sparkKafka'
+include 'spark-sparkRedis'
+include 'spark-sparkMybatis'
+

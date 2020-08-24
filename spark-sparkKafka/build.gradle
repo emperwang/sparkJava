@@ -1,0 +1,163 @@
+group 'com.demo.spark.java'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    maven {url "http://maven.aliyun.com/nexus/content/groups/public"}
+    mavenCentral()
+}
+
+dependencies {
+    //implementation  不可以传递的依赖
+    // api           可以传递的依赖
+    // compileOnly  编译时使用
+    // runtimeOnly   运行时使用,编译时没有
+    // annotationProcessor  如 lombok
+    implementation group: 'org.apache.spark', name: 'spark-core_2.11', version:'2.4.0'
+    implementation group: 'org.apache.spark', name: 'spark-streaming-kafka-0-10_2.11', version: '2.4.0'
+    implementation group: 'org.apache.spark', name: 'spark-streaming_2.11', version: '2.4.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task printInfo() {
+    group = "printinfo"
+    description = "print project info"
+    doLast {
+        // java output dir
+        println sourceSets.main.java.outputDir
+
+        // scala output dir
+        println sourceSets.main.scala.outputDir
+
+        // resource dir
+        println sourceSets.main.resources.srcDirs
+        println ("begin print all source")
+        sourceSets.findAll {
+            tt -> tt.each {
+                t -> println(t.compileClasspath)
+            }
+        }
+        println("all source end")
+    }
+}
+
+// 业务 jar
+task busjar(type: Jar){
+    group='release'
+    description='build bus jar'
+    archiveBaseName="first"
+    archiveAppendix="demo"
+    archiveVersion="1.0.0"
+    archiveClassifier="uber"
+    archiveExtension="jar"
+    // classes 来源
+    from {
+        sourceSets.main.java.outputDir
+        sourceSets.main.scala.outputDir
+    }
+    /*into {
+        project.getBuildDir().absolutePath + "/boot"
+    }*/
+    // 最后输出的目录
+    destinationDirectory = file(project.getBuildDir().absolutePath + "/boot")
+    dirMode = 755
+    fileMode = 755
+    manifest {
+        attributes (
+                "Manifest-Version": 1.0,
+                "Main-Class" : 'com.wk.App'
+        )
+    }
+}
+busjar.dependsOn("compileJava", "compileScala")
+
+task copyConfig(type:Copy){
+    group = 'release'
+    description = 'copy config'
+    from ('src/main/resources'){
+        include '**/*.properties'
+        exclude '**/*.bak'
+    }
+
+    includeEmptyDirs = false
+    fileMode=755
+    dirMode=755
+    into "$buildDir/config"
+}
+
+// copy script
+task copyScript(type: Copy) {
+    group = 'release'
+    description = 'copy script'
+    from ("src/bin") {
+        include "**/*.sh"
+    }
+    exclude '**/*.bak'
+    includeEmptyDirs = false
+    fileMode=755
+    dirMode=755
+    into "$buildDir/bin"
+}
+
+
+// copy lib
+task copyLib(type: Copy){
+    group = 'release'
+    description = 'copy lib'
+    from configurations.compileClasspath
+    into "$buildDir/lib"
+}
+
+// 把所有依赖包 打包成jar
+task depjar(type:Jar){
+    archiveBaseName="fat"
+    archiveAppendix="demo"
+    archiveVersion="1.0.0"
+    archiveClassifier="uber"
+    archiveExtension="jar"
+    from {
+        // 依赖jar包
+        configurations.compileClasspath
+    }
+    destinationDirectory = file(project.getBuildDir().absolutePath + "/fat")
+    dirMode = 755
+    fileMode = 755
+}
+
+task assembly(){
+    group="release"
+    description="assembly file"
+}
+assembly.dependsOn({
+    tasks.findAll {
+        task -> task.name.startsWith("copy")
+    }
+})
+assembly.dependsOn("depjar")
+
+task release(type:Tar) {
+    group="release"
+    description="release project"
+    archiveBaseName="tarfile"
+    archiveAppendix="demo"
+    archiveVersion="1.0.0"
+    archiveExtension="tar"
+    into('lib'){
+        from "$buildDir/fat"
+    }
+
+    into('config'){
+        from "$buildDir/config"
+    }
+    into ('bin'){
+        from "$buildDir/bin"
+    }
+    into ('boot'){
+        from "$buildDir/boot"
+    }
+    dirMode=755
+    fileMode=755
+    destinationDirectory = file(project.getBuildDir().absolutePath+"/release")
+    includeEmptyDirs = false
+}
+release.dependsOn("assembly")
