@@ -7,12 +7,14 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     //implementation  不可以传递的依赖
     // api           可以传递的依赖
     // compileOnly  编译时使用
     // runtimeOnly   运行时使用,编译时没有
     // annotationProcessor  如 lombok
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.12'
     implementation group: 'org.apache.spark', name: 'spark-core_2.11', version:'2.4.0'
     implementation group: 'org.apache.spark', name: 'spark-streaming-kafka-0-10_2.11', version: '2.4.0'
     implementation group: 'org.apache.spark', name: 'spark-streaming_2.11', version: '2.4.0'
@@ -31,11 +33,19 @@ task printInfo() {
 
         // resource dir
         println sourceSets.main.resources.srcDirs
-        println ("begin print all source")
+        println ("-----------begin print all source")
         sourceSets.findAll {
             tt -> tt.each {
                 t -> println(t.compileClasspath)
             }
+        }
+        println ("-----------source set path")
+        sourceSets.findAll {
+            sr ->
+                println sr.name
+                //println sr.compileClasspath.findAll {cp -> println(cp.absolutePath)}
+                //println sr.runtimeClasspath.findAll{rp -> println(rp.absolutePath)}
+
         }
         println("all source end")
     }
@@ -55,9 +65,6 @@ task busjar(type: Jar){
         sourceSets.main.java.outputDir
         sourceSets.main.scala.outputDir
     }
-    /*into {
-        project.getBuildDir().absolutePath + "/boot"
-    }*/
     // 最后输出的目录
     destinationDirectory = file(project.getBuildDir().absolutePath + "/boot")
     dirMode = 755
@@ -65,11 +72,47 @@ task busjar(type: Jar){
     manifest {
         attributes (
                 "Manifest-Version": 1.0,
-                "Main-Class" : 'com.wk.App'
+                "Main-Class" : 'com.wk.MainStarter'
         )
     }
 }
 busjar.dependsOn("compileJava", "compileScala")
+
+task fatjar(type: Jar){
+    group='release'
+    description='build bus jar'
+    archiveBaseName="fat"
+    archiveAppendix="demo"
+    archiveVersion="1.0.0"
+    archiveClassifier="uber"
+    archiveExtension="jar"
+    // classes 来源
+    from {
+        sourceSets.main.java.outputDir
+        sourceSets.main.scala.outputDir
+    }
+    from {
+        sourceSets.main.resources.srcDirs
+    }
+
+    from {
+       // configurations.compileClasspath
+        sourceSets.main.compileClasspath
+    }
+
+    // 最后输出的目录
+    destinationDirectory = file(project.getBuildDir().absolutePath + "/boot")
+    dirMode = 755
+    fileMode = 755
+    manifest {
+        attributes (
+                "Manifest-Version": 1.0,
+                "Main-Class" : 'com.wk.ScalaObject'
+        )
+    }
+}
+fatjar.dependsOn("clean","compileJava", "compileScala")
+
 
 task copyConfig(type:Copy){
     group = 'release'
@@ -161,3 +204,22 @@ task release(type:Tar) {
     includeEmptyDirs = false
 }
 release.dependsOn("assembly")
+
+// unzip jar and pack
+task unzip(type:Copy){
+    group="release"
+    description="unzip jar"
+    // origin jar
+    def zipFile = file("$buildDir/lib/").listFiles()
+
+    // zunzip dir
+    def outputDir = file("$buildDir/unpack")
+    
+    FileTree jarTree = zipTree(zipFile)
+    from jarTree
+    into outputDir
+}
+unzip.dependsOn("copyLib")
+
+
+
