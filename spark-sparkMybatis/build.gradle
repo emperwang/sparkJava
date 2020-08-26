@@ -18,3 +18,36 @@ dependencies {
     implementation group: 'org.apache.spark', name: 'spark-streaming_2.11', version: '2.4.0'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+
+
+task busjar(type:Jar){
+    group = "mybatis-release"
+    description="mybatis-bus jar"
+    archiveBaseName="first"
+    archiveAppendix="mybatis"
+    archiveVersion="1.0.0"
+    archiveClassifier="uber"
+    archiveExtension="jar"
+    from {
+        sourceSets.main.scala.outputDir
+    }
+    from {
+        sourceSets.main.java.outputDir
+    }
+    from {
+        sourceSets.main.resources.srcDirs
+    }
+    destinationDirectory=file(project.getBuildDir().absolutePath + "/mybatis-boot")
+    fileMode=755
+    dirMode=755
+    manifest{
+        attributes (
+                "Manifest-Version": 1.0,
+                "Main-Class" : 'com.wk.GetDataAndSave'
+        )
+    }
+}
+busjar.dependsOn("compileJava", "compileScala")
+
+
