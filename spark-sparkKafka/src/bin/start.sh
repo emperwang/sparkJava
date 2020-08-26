@@ -8,3 +8,7 @@ nohup $CMD --master spark://name2:7077  \
     --jars  ${base}/../lib/fat-demo-1.0.0-uber.jar  \
         ${base}/../boot/first-demo-1.0.0-uber.jar  \
         ${base}/../config/kafkaConfig.properties   >>  ${base}/runtime.log 2>&1 &
+
+# 此操作需要把依赖包, 拷贝到所有机器上
+    #--conf spark.executor.extraClassPath=${base}/../lib/*  \
+    #--conf spark.driver.extraClassPath=${base}/../lib/*   \

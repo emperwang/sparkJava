@@ -206,20 +206,74 @@ task release(type:Tar) {
 release.dependsOn("assembly")
 
 // unzip jar and pack
-task unzip(type:Copy){
+// 目前不清楚为什么  netty-3.9.9.jar  和 xml-apis.jar 不能解压
+task unzip(){
     group="release"
     description="unzip jar"
-    // origin jar
-    def zipFile = file("$buildDir/lib/").listFiles()
+    doLast{
+        // zunzip dir
+        def outputDir = file("$buildDir/unpack")
+        def outputDirJar = file("$buildDir/lib")
+        if (outputDirJar.exists()) outputDirJar.deleteDir()
+        // origin jar
+        def zipFile = sourceSets.main.compileClasspath.findAll{
+           jf -> jf.name.startsWith("netty-3.9.9") || jf.name.contains("xml-apis")
+        }
+        copy {
+            from zipFile
+            into outputDirJar
+        }
+        /*def unzipJar = outputDirJar.listFiles().findAll {jff -> jff.name.endsWith("jar")}
+        unzipJar.collect {
+            jfile ->
+                println ("unzipfile: " + jfile.name)
+                FileTree unJTree = zipTree(jfile)
+                copy {
+                    from unJTree
+                    into outputDir
+                }
+        }*/
+    }
 
-    // zunzip dir
-    def outputDir = file("$buildDir/unpack")
-    
-    FileTree jarTree = zipTree(zipFile)
-    from jarTree
-    into outputDir
 }
-unzip.dependsOn("copyLib")
 
+// unzip all file
+task unzipAlldep(){
+    group = 'release'
+    description = 'unzip all dep jar'
+    doLast{
+        def zipFile = sourceSets.main.compileClasspath.findAll {
+            jf -> jf.name.endsWith(".jar") && !jf.name.startsWith("netty-3.9.9") && !jf.name.contains("xml-apis")
+        }
+        def outputDir = file("$buildDir/unpack")
+        zipFile.collect {
+            jfile ->
+                println ("file: " + jfile.name)
+                FileTree unJTree = zipTree(jfile)
+                copy {
+                    from unJTree
+                    into outputDir
+                }
+        }
+    }
+}
 
-
+// 所有的依赖打包为一个 fat jar
+task dependenciesJar(type:Jar){
+    group="release"
+    description="dependency jar generate"
+    archiveBaseName="dep"
+    archiveAppendix="demo"
+    archiveVersion="1.0.0"
+    archiveClassifier="fat"
+    archiveExtension="jar"
+    //def outputDir = file(project.getBuildDir().absolutePath + "/unpack")
+    from {
+        // 依赖jar包
+       project.getBuildDir().absolutePath+"/unpack"
+    }
+    destinationDirectory = file(project.getBuildDir().absolutePath + "/fat")
+    dirMode = 755
+    fileMode = 755
+}
+//dependenciesJar.dependsOn("unzipAlldep","unzip")
