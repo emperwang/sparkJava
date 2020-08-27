@@ -8,6 +8,7 @@ repositories {
 }
 
 dependencies {
+    // compile group: 'org.mybatis', name: 'mybatis', version: '3.4.6'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.12'
@@ -22,7 +23,7 @@ task busjar(type:Jar){
     group = "mybatis-release"
     description="mybatis-bus jar"
     archiveBaseName="first"
-    archiveAppendix="mybatis"
+    archiveAppendix="redis"
     archiveVersion="1.0.0"
     archiveClassifier="uber"
     archiveExtension="jar"
@@ -35,13 +36,13 @@ task busjar(type:Jar){
     from {
         sourceSets.main.resources.srcDirs
     }
-    destinationDirectory=file(project.getBuildDir().absolutePath + "/mybatis-boot")
+    destinationDirectory=file(project.getBuildDir().absolutePath + "/redis-boot")
     fileMode=755
     dirMode=755
     manifest{
         attributes (
                 "Manifest-Version": 1.0,
-                "Main-Class" : 'com.wk.GetDataAndSave'
+                "Main-Class" : 'com.wk.SetDataToRedis'
         )
     }
 }
