@@ -5,6 +5,7 @@ import java.io.FileInputStream
 import com.wk.Mapper.TestMapper
 import com.wk.entity.TestBean
 import com.wk.util.{FactoryUtil, SessionUtil}
+import org.apache.spark.streaming.kafka010.{CanCommitOffsets, HasOffsetRanges}
 
 object GetDataAndSave {
   def main(args: Array[String]): Unit = {
@@ -19,6 +20,8 @@ object GetDataAndSave {
     val (ssc, dStream) = util.StreamingContext()
 
     dStream.foreachRDD(rdd => {
+      // 获取
+      val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.foreach( rec => {
         println(s"receive topic: ${rec.topic()}, offset:${rec.offset()}," +
           s"value : ${rec.value()}, partition: ${rec.partition()}")
@@ -36,8 +39,9 @@ object GetDataAndSave {
           println(s"invalid value: ${rec.value()}")
         }
       })
+      // commit offset
+      dStream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)
     })
-
     ssc.start()
     ssc.awaitTermination()
   }
