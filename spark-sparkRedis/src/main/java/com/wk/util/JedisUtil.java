@@ -10,9 +10,14 @@ import java.util.Properties;
 import java.util.Set;
 
 @Getter
-public class JedisUtil{
+public class JedisUtil {
+    private static ThreadLocal<JedisCluster> local;
 
-     public static  JedisCluster getCluster(Properties prop){
+    public static JedisCluster getCluster(Properties prop) {
+        JedisCluster cluster1 = local.get();
+        if (cluster1 != null) {
+            return cluster1;
+        }
         Set<HostAndPort> hostAndPortSet = new HashSet<>();
         String hoststr = prop.getProperty("redis.host");
         String[] iphs = hoststr.split(",");
@@ -33,6 +38,7 @@ public class JedisUtil{
         // 对拿到的连接进行校验
         poolConfig.setTestOnBorrow(true);
         JedisCluster cluster = new JedisCluster(hostAndPortSet, poolConfig);
+        local.set(cluster);
         return cluster;
     }
 
