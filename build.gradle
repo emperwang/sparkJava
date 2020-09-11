@@ -2,6 +2,21 @@ allprojects  {
   apply plugin: 'maven'
   group = 'com.demo.spark.java'
   version = '1.0-SNAPSHOT'
+  // 生成pom文件
+  task writeNewPom << {
+    pom {
+      project {
+        inceptionYear '2018'
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+          }
+        }
+      }
+    }.writeTo("pom.xml")
+  }
 }
 
 subprojects {
