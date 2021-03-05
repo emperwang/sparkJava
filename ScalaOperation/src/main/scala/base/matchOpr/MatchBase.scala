@@ -193,8 +193,8 @@ object MatchBase {
     // result 根据 obj的类型来匹配
     val result = obj match {
       case a:Int => a
-      case b:Map[String, Int] => "object is String- int map"
-      case c:Map[Int, String] => "object is int-string map"
+      //case b:Map[String, Int] => "object is String- int map"
+      //case c:Map[Int, String] => "object is int-string map"
       case d:Array[String] => d
       case e:Array[Int] => "object is int array"
       case f:BigInt => Int.MaxValue
@@ -214,7 +214,7 @@ object MatchBase {
       case '+' => println("Ok ~")
         // 这里的 case mychar 就是把 ch的值赋值给 mychar
       case mychar => println("ok ~ "+mychar)
-      case _ => println("ok~  match _")
+      //case _ => println("ok~  match _")
     }
 
     // match 是一个表达式, 因此可以有返回值

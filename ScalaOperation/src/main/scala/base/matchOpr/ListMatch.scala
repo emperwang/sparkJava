@@ -17,6 +17,7 @@ object ListMatch {
 
     case Nil =>  println("match nothing")// No-op
 
+    case _ => println("nothing ")
   }
 
 }

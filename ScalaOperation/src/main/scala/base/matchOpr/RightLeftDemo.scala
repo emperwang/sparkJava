@@ -43,7 +43,8 @@ object RightLeftDemo {
   }
 
   def fun2():Unit={
-    var s = null
+    //var s = null
+    var s = ""
     throwableToLeft{ s.toUpperCase } match {
       case Right(s) => println(s)
       case Left(e) => e.asInstanceOf[Throwable].printStackTrace()

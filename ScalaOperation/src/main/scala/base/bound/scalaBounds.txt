@@ -1,0 +1,51 @@
+scala 多重界定:
+T <: A with B means: T 是 A或者 B的子类
+T >: A with B means: A 或者 B是T的子类
+T >:A <:B     means: T同时拥有下界A 和上界B(也就是说A必须为B的子类型, 下界必须在前, 上界必须在后)
+T:A:B         means: 上下文界定
+T <% A <% B   means: 视图界定, T可以同时拥有多个视图界定, 必须能够同时转换为A和B的要求
+
+scala 类型约束:
+A =:= B  表示A类型等同于B类型
+A <:< B  表示A类型是B类型的子类型
+
+泛型:
+边界: Bounds
+[T <: Comparable[T]]
+<:  指明上界, 表达了泛型的类型必须是 "某种类型" 或 某种类型 的子类
+>:  指明下界, 表达了泛型的类型必须是 "某种类型" 或 "某种类型" 的父类
+
+视图界定 View Bounds
+[T <% Comparable[T]]
+<%  对上边界的加强版, 可以利用implicit 隐式转换将实参类型转换为 目标类型
+
+上下文界定 Context Bounds
+[T:Ordering]
+说明存在一个隐式的值 Ordering[T](implicit ordered:Ordering[T])
+针对创建泛型数组的上下文界定:
+    [T: ClassTag]
+    [T: Manifest]
+    [T: TypeTag]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
